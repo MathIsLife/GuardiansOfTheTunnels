@@ -550,6 +550,7 @@ void iMouse (int button, int state, int x, int y) {
 
       if (insideBackFromGame(x, y)) {
         gameState = MENU;
+	updateScore(score);
         PlaySound("C:\\temp\\test.mp3", NULL, SND_ASYNC);
       }
 
