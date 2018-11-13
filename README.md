@@ -3,8 +3,10 @@ This is a puzzle game where the users will be basically solving the minimum vert
 
 How to run 
 * Download the project folder 
-[ Download link : https://github.com/MathIsLife/GuardiansOfTheTunnels/tree/master/project ]
+[ Download link : https://github.com/MathIsLife/GuarisdiansOfTheTunnels/tree/master/project ]
 * Open the file "Guardians of the Tunnels.cbp" in Code Blocks
 [ Code Blocks download link : http://www.codeblocks.org/downloads or https://sourceforge.net/projects/codeblocks ]
+* Make your Code Blocks compatible for iGraphics by following the instructions in this link
+  [ http://ashikur.buet.ac.bd/CSE101/UserGuide.pdf ]
 * Build and run the file
 * Game Play rules are described in the "How to Play" page
