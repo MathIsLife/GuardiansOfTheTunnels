@@ -1,0 +1,692 @@
+#include <bits/stdc++.h>
+#include <iGraphics.h>
+#include <windows.h>
+
+#include "helper.h"
+#include "scores.h"
+#include "geometry.h"
+#include "drawing.h"
+#include "preprocessors.h"
+
+#pragma comment(lib, "winmm.lib")
+
+using namespace std;
+
+void startMenu() {
+//  set background
+  iShowBMP(0, 0, "pictures/startScreen.bmp");
+  load("pictures/title.rs", &picStorage);
+  iShowBMP2(52, 350, &picStorage, 0, 0, 0);
+}
+
+void showStory() {
+  char path[100];
+  sprintf(path, "pictures/story/%02d.bmp", storyPage);
+  iShowBMP(0, 0, path);
+
+  iSetColor(255, 255, 255);
+  iText(80, 7, "Click on the left side for previous page, right side for next page.", GLUT_BITMAP_HELVETICA_12);
+  iText(145, 490, "Press 'end' button to skip!", GLUT_BITMAP_HELVETICA_18);
+}
+
+void drawEdge (int idx) {
+  point a = nodes[edges[idx].a];
+  point b = nodes[edges[idx].b];
+  color col = currentEdgeColors[idx];
+  iSetColor(col.r, col.g, col.b);
+
+  const double shift = 0.5;
+
+  rep (it, 0, 9) {
+    iLine(a.x, a.y, b.x, b.y);
+    point nxt_a = adjust(a, b, shift, +1);
+    point nxt_b = adjust(b, a, shift, -1);
+    a = nxt_a, b = nxt_b;
+  }
+}
+
+void initLevel (int level) {
+  currentLevel = level;
+
+  if (level == 1) {
+    timeLeft = 10;
+    int translation = 210;
+
+    nodes.clear();
+    nodes.emplace_back(translation, translation);
+    nodes.emplace_back(translation, translation + 200);
+    nodes.emplace_back(translation + 100, translation + 200);
+    nodes.emplace_back(translation + 100, translation);
+    nodes.emplace_back(translation - 100, translation + 50);
+    nodes.emplace_back(translation + 200, translation + 100);
+
+    edges.clear();
+    edges.emplace_back(0, 1);
+    edges.emplace_back(1, 2);
+    edges.emplace_back(2, 3);
+    edges.emplace_back(3, 0);
+    edges.emplace_back(4, 0);
+    edges.emplace_back(4, 1);
+    edges.emplace_back(5, 2);
+
+    graph.clear();
+    graph.resize(nodes.size());
+    for (int i = 0; i < edges.size(); ++i) {
+      graph[edges[i].a].push_back(i);
+      graph[edges[i].b].push_back(i);
+    }
+
+    currentNodeColors.clear();
+    for (auto it : nodes) {
+      currentNodeColors.push_back(INITIAL_NODE_COLOR);
+    }
+
+    currentEdgeColors.clear();
+    for (auto it : edges) {
+      currentEdgeColors.push_back(INITIAL_EDGE_COLOR);
+    }
+
+    minCover = 3;
+  }
+
+  if (level == 2) {
+    timeLeft = 15;
+    int x = 220, y = 210;
+
+    nodes.clear();
+    nodes.emplace_back(x + 50, x + 100);
+    nodes.emplace_back(x - 140, x + 40);
+    nodes.emplace_back(x, x - 70);
+    nodes.emplace_back(x + 170, x + 90);
+    nodes.emplace_back(x + 180, x - 80);
+    nodes.emplace_back(x + 180, x + 190);
+
+    edges.clear();
+    edges.emplace_back(0, 1);
+    edges.emplace_back(0, 2);
+    edges.emplace_back(0, 3);
+    edges.emplace_back(0, 4);
+    edges.emplace_back(0, 5);
+    edges.emplace_back(1, 2);
+
+
+    graph.clear();
+    graph.resize(nodes.size());
+    for (int i = 0; i < edges.size(); ++i) {
+      graph[edges[i].a].push_back(i);
+      graph[edges[i].b].push_back(i);
+    }
+
+    currentNodeColors.clear();
+    for (auto it : nodes) {
+      currentNodeColors.push_back(INITIAL_NODE_COLOR);
+    }
+
+    currentEdgeColors.clear();
+    for (auto it : edges) {
+      currentEdgeColors.push_back(INITIAL_EDGE_COLOR);
+    }
+
+    minCover = 2;
+  }
+
+  if (level == 3) {
+    timeLeft = 20;
+    int translation = 260;
+
+    nodes.clear();
+    nodes.emplace_back(translation, translation);
+    nodes.emplace_back(translation + 100, translation);
+    nodes.emplace_back(translation + 100, translation + 100);
+    nodes.emplace_back(translation, translation + 100);
+    nodes.emplace_back(translation, translation + 150);
+    nodes.emplace_back(translation - 120, translation + 100);
+    nodes.emplace_back(translation - 120, translation);
+    nodes.emplace_back(translation, translation - 70);
+
+    edges.clear();
+    edges.emplace_back(0, 1);
+    edges.emplace_back(0, 3);
+    edges.emplace_back(0, 5);
+    edges.emplace_back(0, 6);
+    edges.emplace_back(0, 7);
+    edges.emplace_back(1, 3);
+    edges.emplace_back(2, 3);
+    edges.emplace_back(3, 4);
+    edges.emplace_back(3, 5);
+    edges.emplace_back(4, 5);
+    edges.emplace_back(5, 6);
+
+    graph.clear();
+    graph.resize(nodes.size());
+    for (int i = 0; i < edges.size(); ++i) {
+      graph[edges[i].a].push_back(i);
+      graph[edges[i].b].push_back(i);
+    }
+
+    currentNodeColors.clear();
+    for (auto it : nodes) {
+      currentNodeColors.push_back(INITIAL_NODE_COLOR);
+    }
+
+    currentEdgeColors.clear();
+    for (auto it : edges) {
+      currentEdgeColors.push_back(INITIAL_EDGE_COLOR);
+    }
+
+    minCover = 3;
+  }
+
+  if (level == 4) {
+    timeLeft = 25;
+    int xTranslation = 180, yTranslation = 290;
+
+    nodes.clear();
+    nodes.emplace_back(xTranslation, yTranslation);
+    nodes.emplace_back(xTranslation + 70, yTranslation);
+    nodes.emplace_back(xTranslation + 120, yTranslation);
+    nodes.emplace_back(xTranslation + 170, yTranslation);
+    nodes.emplace_back(xTranslation + 260, yTranslation + 120);
+    nodes.emplace_back(xTranslation + 170, yTranslation + 70);
+    nodes.emplace_back(xTranslation + 120, yTranslation + 120);
+    nodes.emplace_back(xTranslation + 95, yTranslation + 70);
+    nodes.emplace_back(xTranslation + 45, yTranslation + 70);
+    nodes.emplace_back(xTranslation - 80, yTranslation + 120);
+    nodes.emplace_back(xTranslation - 70, yTranslation - 70);
+    nodes.emplace_back(xTranslation + 70, yTranslation - 70);
+    nodes.emplace_back(xTranslation + 120, yTranslation - 70);
+    nodes.emplace_back(xTranslation + 170, yTranslation - 70);
+
+    edges.clear();
+    edges.emplace_back(0, 1);
+    edges.emplace_back(0, 8);
+    edges.emplace_back(0, 9);
+    edges.emplace_back(0, 10);
+    edges.emplace_back(1, 2);
+    edges.emplace_back(1, 7);
+    edges.emplace_back(2, 3);
+    edges.emplace_back(2, 5);
+    edges.emplace_back(2, 7);
+    edges.emplace_back(2, 11);
+    edges.emplace_back(2, 12);
+    edges.emplace_back(2, 13);
+    edges.emplace_back(3,4);
+    edges.emplace_back(4, 5);
+    edges.emplace_back(4, 6);
+    edges.emplace_back(4, 13);
+    edges.emplace_back(4, 7);
+
+    graph.clear();
+    graph.resize(nodes.size());
+    for (int i = 0; i < edges.size(); ++i) {
+      graph[edges[i].a].push_back(i);
+      graph[edges[i].b].push_back(i);
+    }
+
+    currentNodeColors.clear();
+    for (auto it : nodes) {
+      currentNodeColors.push_back(INITIAL_NODE_COLOR);
+    }
+
+    currentEdgeColors.clear();
+    for (auto it : edges) {
+      currentEdgeColors.push_back(INITIAL_EDGE_COLOR);
+    }
+
+    minCover = 4;
+  }
+
+  if (level == 5) {
+    timeLeft = 35;
+
+    int x = 16, y = 305;
+    nodes.clear();
+    nodes.emplace_back(x+10,y);
+    nodes.emplace_back(x+80, y);
+    nodes.emplace_back(x+160, y);
+    nodes.emplace_back(x+240, y);
+    nodes.emplace_back(x+320, y);
+    nodes.emplace_back(x+400, y);
+    nodes.emplace_back(x+470, y);
+    nodes.emplace_back(x+80, y-85);
+    nodes.emplace_back(x+160, y-85);
+    nodes.emplace_back(x+240, y-85);
+    nodes.emplace_back(x+320, y-85);
+    nodes.emplace_back(x+400, y-85);
+    nodes.emplace_back(x+160, y-170);
+    nodes.emplace_back(x+320, y-170);
+    nodes.emplace_back(x+80, y+85);
+    nodes.emplace_back(x+160, y+85);
+    nodes.emplace_back(x+240, y+85);
+    nodes.emplace_back(x+320, y+85);
+    nodes.emplace_back(x+400, y+85);
+
+    edges.clear();
+    edges.emplace_back(0, 1);
+    edges.emplace_back(0, 7);
+    edges.emplace_back(0, 14);
+    edges.emplace_back(1, 2);
+    edges.emplace_back(2, 3);
+    edges.emplace_back(2, 7);
+    edges.emplace_back(2, 8);
+    edges.emplace_back(2, 9);
+    edges.emplace_back(2, 14);
+    edges.emplace_back(2, 15);
+    edges.emplace_back(2, 16);
+    edges.emplace_back(3, 4);
+    edges.emplace_back(4, 5);
+    edges.emplace_back(4, 9);
+    edges.emplace_back(4, 10);
+    edges.emplace_back(4, 11);
+    edges.emplace_back(4, 16);
+    edges.emplace_back(4, 17);
+    edges.emplace_back(4, 18);
+    edges.emplace_back(5, 6);
+    edges.emplace_back(6, 11);
+    edges.emplace_back(6, 18);
+    edges.emplace_back(7, 8);
+    edges.emplace_back(7, 12);
+    edges.emplace_back(8, 9);
+    edges.emplace_back(8, 12);
+    edges.emplace_back(9, 10);
+    edges.emplace_back(9, 12);
+    edges.emplace_back(10, 11);
+    edges.emplace_back(10, 13);
+    edges.emplace_back(12, 13);
+
+    graph.clear();
+    graph.resize(nodes.size());
+    for (int i = 0; i < edges.size(); ++i) {
+      graph[edges[i].a].push_back(i);
+      graph[edges[i].b].push_back(i);
+    }
+
+    currentNodeColors.clear();
+    for (auto it : nodes) {
+      currentNodeColors.push_back(INITIAL_NODE_COLOR);
+    }
+
+    currentEdgeColors.clear();
+    for (auto it : edges) {
+      currentEdgeColors.push_back(INITIAL_EDGE_COLOR);
+    }
+
+    minCover = 7;
+  }
+
+  if (level == 6) {
+    timeLeft = 40;
+    int x = 195, y = 110;
+
+    nodes.clear();
+    nodes.emplace_back(x,y);
+    nodes.emplace_back(x+170, y);
+    nodes.emplace_back(x+200, y+70);
+    nodes.emplace_back(x+220, y+220);
+    nodes.emplace_back(x+100, y+300);
+    nodes.emplace_back(x, y+280);
+    nodes.emplace_back(x-80, y+300);
+    nodes.emplace_back(x-130, y+180);
+    nodes.emplace_back(x-110, y+100);
+    nodes.emplace_back(x-100, y+10);
+    nodes.emplace_back(x-10, y+50);
+    nodes.emplace_back(x+100, y+50);
+    nodes.emplace_back(x+170, y+120);
+    nodes.emplace_back(x+70, y+220);
+    nodes.emplace_back(x-40, y+210);
+    nodes.emplace_back(x-60, y+130);
+    nodes.emplace_back(x - 20, y+85);
+    nodes.emplace_back(x+60, y+70);
+    nodes.emplace_back(x+80, y+150);
+    nodes.emplace_back(x+10, y+180);
+    nodes.emplace_back(x+10, y+130);
+    nodes.emplace_back(x+70, y+110);
+
+    edges.clear();
+    edges.emplace_back(0, 1);
+    edges.emplace_back(0, 8);
+    edges.emplace_back(1, 2);
+    edges.emplace_back(1, 10);
+    edges.emplace_back(1, 11);
+    edges.emplace_back(1, 12);
+    edges.emplace_back(2, 3);
+    edges.emplace_back(3, 4);
+    edges.emplace_back(3, 12);
+    edges.emplace_back(3, 13);
+    edges.emplace_back(3, 17);
+    edges.emplace_back(3, 18);
+    edges.emplace_back(4, 14);
+    edges.emplace_back(5, 6);
+    edges.emplace_back(5, 14);
+    edges.emplace_back(6, 7);
+    edges.emplace_back(6, 14);
+    edges.emplace_back(7, 8);
+    edges.emplace_back(7, 14);
+    edges.emplace_back(8, 9);
+    edges.emplace_back(8, 10);
+    edges.emplace_back(8, 15);
+    edges.emplace_back(8, 16);
+    edges.emplace_back(13, 14);
+    edges.emplace_back(13, 20);
+    edges.emplace_back(14, 15);
+    edges.emplace_back(14, 19);
+    edges.emplace_back(16, 20);
+    edges.emplace_back(17, 20);
+    edges.emplace_back(18, 20);
+    edges.emplace_back(19, 20);
+    edges.emplace_back(20, 21);
+
+    graph.clear();
+    graph.resize(nodes.size());
+    for (int i = 0; i < edges.size(); ++i) {
+      graph[edges[i].a].push_back(i);
+      graph[edges[i].b].push_back(i);
+    }
+
+    currentNodeColors.clear();
+    for (auto it : nodes) {
+      currentNodeColors.push_back(INITIAL_NODE_COLOR);
+    }
+
+    currentEdgeColors.clear();
+    for (auto it : edges) {
+      currentEdgeColors.push_back(INITIAL_EDGE_COLOR);
+    }
+
+    minCover = 6;
+  }
+}
+
+void checkIfInsideNode (int x, int y) {
+  for (unsigned i = 0; i < nodes.size(); ++i) {
+    point it = nodes[i];
+    if ((x - it.x) * (x - it.x) + (y - it.y) * (y - it.y) <= NODE_RADIUS * NODE_RADIUS) {
+      if (currentNodeColors[i] == INITIAL_NODE_COLOR) {
+        currentNodeColors[i] = MARKED_NODE_COLOR;
+        for (int adj : graph[i]) {
+          currentEdgeColors[adj] = MARKED_EDGE_COLOR;
+        }
+      } else {
+        currentNodeColors[i] = INITIAL_NODE_COLOR;
+        for (int adj : graph[i]) {
+          int other = edges[adj].a ^ edges[adj].b ^ i;
+          if (currentNodeColors[other] == INITIAL_NODE_COLOR) {
+            currentEdgeColors[adj] = INITIAL_EDGE_COLOR;
+          }
+        }
+      }
+      Beep(500, 70);
+      return;
+    }
+  }
+}
+
+void drawGame() {
+  char path[100];
+  sprintf(path, "pictures/game%d.bmp", 1 + currentLevel % 3);
+
+  iShowBMP(0, 0, path);
+  iShowBMP(70, 20, "pictures/proposePlan.bmp");
+  iShowBMP(280, 20, "pictures/backToMenu.bmp");
+
+  char timeBuff[100];
+  sprintf(timeBuff, "Time remaining: %d seconds.", timeLeft);
+  iSetColor(255, 0, 0);
+  iText(155, 455, timeBuff, GLUT_BITMAP_HELVETICA_18);
+
+  for (unsigned i = 0; i < edges.size(); ++i) {
+    drawEdge(i);
+  }
+
+  for (unsigned i = 0; i < nodes.size(); ++i) {
+    point it = nodes[i];
+    color col = currentNodeColors[i];
+    iSetColor(col.r, col.g, col.b);
+    iFilledCircle(it.x, it.y, NODE_RADIUS);
+    if (col == MARKED_NODE_COLOR) {
+      char path[100];
+      sprintf(path, "pictures/soldier%d.bmp", 1 + rand() % 2);
+      iShowBMP(it.x - 9, it.y - 15, path);
+    }
+  }
+}
+
+bool validVertexCover() {
+  for (auto it : currentEdgeColors) {
+    if (it == INITIAL_EDGE_COLOR) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+void showNameInput() {
+  iShowBMP(0, 0, "pictures/menuBackground.bmp");
+  iShowBMP(110, 230, "pictures/nameSlot.bmp");
+	iSetColor(255, 0, 0);
+	iText(190, 300, "Enter Your Name: _", GLUT_BITMAP_HELVETICA_18);
+	iText(159, 50, "Press enter to continue.", GLUT_BITMAP_HELVETICA_18);
+	iSetColor(0, 0, 0);
+	iText(256 - playerNameLength * NAME_SHIFT, 250, playerName, GLUT_BITMAP_TIMES_ROMAN_24);
+}
+
+void showGameOverScreen() {
+  iShowBMP(0, 0, "pictures/gameOver.bmp");
+  char finalScore[100];
+  sprintf(finalScore, "Your final score is: %lld.", score);
+  iSetColor(255, 255, 0);
+  iText(140, 160, finalScore, GLUT_BITMAP_TIMES_ROMAN_24);
+
+  iShowBMP(70, 20, "pictures/replay.bmp");
+  iShowBMP(280, 20, "pictures/backToMenu.bmp");
+}
+
+void iDraw() {
+	iClear();
+	if (gameState == MENU) {
+    startMenu();
+	} else if (gameState == HIGH_SCORES) {
+    highScores();
+	} else if (gameState == HOW_TO_PLAY) {
+    showHowToPlay();
+	} else if (gameState == PLAY) {
+    drawGame();
+    iSetColor(255, 255, 255);
+    if (validVertexCover()) {
+      iText(80, 485, "You're watching all the tunnels now.", GLUT_BITMAP_TIMES_ROMAN_24);
+    } else {
+      iText(80, 485, "Some tunnels are still left unguarded.", GLUT_BITMAP_TIMES_ROMAN_24);
+    }
+	} else if (gameState == GAME_OVER) {
+	  showGameOverScreen();
+  } else if (gameState == SHOW_SCORE) {
+    drawScore();
+	} else if (gameState == STORY) {
+    showStory();
+  } else if (gameState == NAME_INPUT) {
+    showNameInput();
+  }
+}
+
+void iMouseMove (int x, int y) {
+
+}
+
+void iMouse (int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+	  if (gameState == MENU) {
+      if (insideNewGame(x, y)) {
+        gameState = NAME_INPUT;
+        memset(playerName, 0, sizeof playerName);
+        playerNameLength = 0;
+        PlaySound("C:\\temp\\test.mp3", NULL, SND_ASYNC);
+      }
+
+      else if (insideHighScores(x, y)) {
+        gameState = HIGH_SCORES;
+        PlaySound("C:\\temp\\test.mp3", NULL, SND_ASYNC);
+      }
+
+      else if (insideHowToPlay(x, y)) {
+        howToPlayPage = 1;
+        gameState = HOW_TO_PLAY;
+        PlaySound("C:\\temp\\test.mp3", NULL, SND_ASYNC);
+      }
+
+      else if (insideExit(x, y)) {
+        exit(0);
+      }
+    }
+
+    else if (gameState == HIGH_SCORES) {
+      if (insideBackFromHighScores(x, y)) {
+        gameState = MENU;
+        PlaySound("C:\\temp\\test.mp3", NULL, SND_ASYNC);
+      }
+    }
+
+    else if (gameState == PLAY) {
+      checkIfInsideNode(x, y);
+
+      if (insideBackFromGame(x, y)) {
+        gameState = MENU;
+        PlaySound("C:\\temp\\test.mp3", NULL, SND_ASYNC);
+      }
+
+      else if (insideSubmitSolution(x, y) && validVertexCover()) {
+        prevScore = score;
+        calculateScore();
+        gameState = SHOW_SCORE;
+        PlaySound("C:\\temp\\test.mp3", NULL, SND_ASYNC);
+      }
+    }
+
+    else if (gameState == SHOW_SCORE) {
+      if (insideBackFromGame(x, y)) {
+        updateScore(score + prevScore);
+        gameState = MENU;
+      }
+
+      else if (insideSubmitSolution(x, y)) {
+        ++currentLevel;
+        score += prevScore;
+        if (currentLevel > maxLevel) {
+          updateScore(score);
+          gameState = GAME_OVER;
+        } else {
+          gameState = PLAY;
+          initLevel(currentLevel);
+        }
+      }
+
+      PlaySound("C:\\temp\\test.mp3", NULL, SND_ASYNC);
+    }
+
+    else if (gameState == GAME_OVER) {
+      if (insideBackFromGame(x, y)) {
+        gameState = MENU;
+      } else if (insideSubmitSolution(x, y)) {
+        currentLevel = 1;
+        score = 0;
+        initLevel(currentLevel);
+        gameState = PLAY;
+      }
+    }
+
+    else if (gameState == HOW_TO_PLAY) {
+      if (x < 256) --howToPlayPage;
+      else ++howToPlayPage;
+      if (howToPlayPage < 1 || howToPlayPage > 2) {
+        gameState = MENU;
+      }
+    }
+
+    else if (gameState == STORY) {
+      if (x < 256) --storyPage;
+      else ++storyPage;
+      if (storyPage < 1) storyPage = 1;
+      if (storyPage > 11) {
+        gameState = PLAY;
+        currentLevel = 1;
+        score = 0;
+        initLevel(currentLevel);
+      }
+    }
+	}
+}
+
+void iKeyboard (unsigned char key) {
+	if (gameState == NAME_INPUT) {
+    if (key == '\r') {
+      if (playerNameLength > 0) {
+        gameState = STORY;
+        storyPage = 1;
+        playerName[playerNameLength] = 0;
+      }
+    } else if (key == '\b') {
+      playerNameLength--;
+      if(playerNameLength < 0) playerNameLength = 0;
+      playerName[playerNameLength] = 0;
+    } else {
+      if (206 - playerNameLength * NAME_SHIFT >= 150) {
+        if (key >= 'a' && key <= 'z') {
+          key -= 'a';
+          key += 'A';
+        }
+        playerName[playerNameLength++] = key;
+      }
+    }
+  }
+}
+
+void iSpecialKeyboard (unsigned char key) {
+  if (gameState == STORY) {
+    if (key == GLUT_KEY_END) {
+      gameState = PLAY;
+      currentLevel = 1;
+      score = 0;
+      initLevel(currentLevel);
+    } else if (key == GLUT_KEY_RIGHT) {
+      ++storyPage;
+      if (storyPage > 11) {
+        gameState = PLAY;
+        currentLevel = 1;
+        score = 0;
+        initLevel(currentLevel);
+      }
+    } else if (key == GLUT_KEY_LEFT) {
+      --storyPage;
+      if (storyPage < 1) storyPage = 1;
+    }
+  }
+
+  if (gameState == HOW_TO_PLAY) {
+    if (key == GLUT_KEY_END) {
+      gameState = MENU;
+    } else if (key == GLUT_KEY_LEFT) {
+      --howToPlayPage;
+    } else if (key == GLUT_KEY_RIGHT) {
+      ++howToPlayPage;
+    }
+    if (howToPlayPage < 1 || howToPlayPage > 2) {
+      gameState = MENU;
+    }
+  }
+}
+
+void reduceTime() {
+  if (gameState == PLAY) {
+    --timeLeft;
+    if (timeLeft < 0) {
+      gameState = GAME_OVER;
+    }
+  }
+}
+
+int main() {
+  srand(time(0));
+  iSetTimer(1000, reduceTime);
+	iInitialize(512, 512, "Guardians of the Tunnels");
+	return 0;
+}
+

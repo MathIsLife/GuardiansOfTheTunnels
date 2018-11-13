@@ -1,0 +1,25 @@
+# depslib dependency file v1.0
+1542081831 source:e:\igraphics\guardians of the tunnels\main.cpp
+	<bits/stdc++.h>
+	<iGraphics.h>
+	<windows.h>
+	"helper.h"
+	"scores.h"
+	"geometry.h"
+	"drawing.h"
+	"preprocessors.h"
+
+1542081153 e:\igraphics\guardians of the tunnels\helper.h
+
+1542081018 e:\igraphics\guardians of the tunnels\scores.h
+	"variables.h"
+
+1542080889 e:\igraphics\guardians of the tunnels\variables.h
+	"preprocessors.h"
+
+1542081040 e:\igraphics\guardians of the tunnels\preprocessors.h
+
+1542081163 e:\igraphics\guardians of the tunnels\geometry.h
+
+1542081785 e:\igraphics\guardians of the tunnels\drawing.h
+
